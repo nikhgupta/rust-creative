@@ -1,21 +1,13 @@
-// since this module is included in the main.rs file,
-// we can refer to some of the types and functions from the main.rs file
-// without having to import them by using the crate:: prefix.
-// for example, we can refer to the App type and the random_range function.
 use crate::particles::Particle;
-use crate::{random_range, App};
+use crate::random_range;
 
 use lib::utils::rng;
 use nannou::rand::Rng;
 
-const MARGIN: f32 = 40.0;
-
-// The implementation and struct is similar to the previous example,
-// but we explicitely mark public fields and methods that we want to expose.
 pub struct Model {
     pub hue: f32,
-    seed: u64,
-    num: u32,
+    pub num: u32,
+    pub seed: u64,
     particles: Vec<Particle>,
 }
 
@@ -31,13 +23,23 @@ impl Model {
         }
     }
 
-    pub fn reset(&mut self, app: &App) {
-        self.reset_seed().reset_hue().reset_num(&app).generate(&app);
+    pub fn reset_num(&mut self, w: f32, h: f32) -> &mut Self {
+        self.num = (w * h / 10000.0).max(1.0) as u32;
+        self
     }
 
-    pub fn add_particles(&mut self, app: &App, num: i32) -> &mut Self {
-        self.num = (self.num as i32 + num).max(1) as u32;
-        self.generate(&app);
+    pub fn reset_except_num(&mut self, w: f32, h: f32) -> &mut Self {
+        self.reset_seed().reset_hue().generate_particles(w, h);
+        self
+    }
+
+    pub fn reset(&mut self, w: f32, h: f32) -> &mut Self {
+        self.reset_num(w, h).reset_except_num(w, h);
+        self
+    }
+
+    pub fn num(&mut self, num: u32) -> &mut Self {
+        self.num = num.max(1);
         self
     }
 
@@ -57,22 +59,15 @@ impl Model {
         self
     }
 
-    fn reset_num(&mut self, app: &App) -> &mut Self {
-        let rect = app.window_rect().pad(MARGIN);
-        self.num = (rect.w() * rect.h() / 10000.0) as u32;
-        self
-    }
-
-    fn generate(&mut self, app: &App) -> &mut Self {
-        let rect = app.window_rect().pad(MARGIN);
+    pub fn generate_particles(&mut self, w: f32, h: f32) -> &mut Self {
         let mut rng = rng(self.seed);
 
         self.particles = Vec::new();
 
         for _ in 0..self.num {
             let particle = Particle::random(
-                rng.gen_range(-0.5..0.5) * rect.w(),
-                rng.gen_range(-0.5..0.5) * rect.h(),
+                rng.gen_range(-0.5..0.5) * w,
+                rng.gen_range(-0.5..0.5) * h,
                 self.hue,
                 &mut rng,
             );

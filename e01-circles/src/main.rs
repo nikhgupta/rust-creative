@@ -28,10 +28,14 @@ fn model(app: &App) -> Model {
     let w = WIDTH as f32 - 2.0 * MARGIN;
     let h = HEIGHT as f32 - 2.0 * MARGIN;
 
-    // these lines should be able to get combined into one line
-    // however, it returns &mut Model instead of Model
-    // which annoys rust-analyzer
-    // for now, I am using this, but will try to use the builder pattern later
+    // Consulting with the rust docs, it seems that
+    // this is indeed the idiomatic way to initialize
+    // and return the model here.
+    //
+    // if we want to use a one-liner, it would mean that
+    // `reset` consumes the model, and we would have to
+    // return a new model - which is non-idiomatic.
+    //
     let mut model = Model::new();
     model.reset(w, h);
     model

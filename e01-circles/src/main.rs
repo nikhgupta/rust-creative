@@ -28,14 +28,6 @@ fn model(app: &App) -> Model {
     let w = WIDTH as f32 - 2.0 * MARGIN;
     let h = HEIGHT as f32 - 2.0 * MARGIN;
 
-    // Consulting with the rust docs, it seems that
-    // this is indeed the idiomatic way to initialize
-    // and return the model here.
-    //
-    // if we want to use a one-liner, it would mean that
-    // `reset` consumes the model, and we would have to
-    // return a new model - which is non-idiomatic.
-    //
     let mut model = Model::new();
     model.reset(w, h);
     model
@@ -49,14 +41,14 @@ fn key_pressed(app: &App, model: &mut Model, key: Key) {
 
     match key {
         Key::Space => {
-            model.reset_except_num(w, h);
+            model.reset(w, h);
         }
         Key::Up => {
-            model.num(model.num + 1).generate_particles(w, h);
+            model.num(model.num + 5).generate_particles(w, h);
         }
         Key::Down => {
             if model.num > 1 {
-                model.num(model.num - 1).generate_particles(w, h);
+                model.num(model.num - 5).generate_particles(w, h);
             }
         }
         _ => (),
@@ -73,7 +65,7 @@ fn update(_app: &App, _model: &mut Model, _update: Update) {}
 fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();
 
-    let bg_color: Rgba = Color::new(0.94, 0.05, model.hue, 1.0).into();
+    let bg_color: Rgba = Color::new(0.98, 0.05, model.hue, 1.0).into();
     draw.background().color(bg_color);
 
     model.display(&draw);

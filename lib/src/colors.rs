@@ -1,3 +1,4 @@
+use nannou::color::white_point::D65;
 use nannou::color::{Lcha, Rgba};
 use nannou::rand::rngs::StdRng;
 use nannou::rand::Rng;
@@ -15,10 +16,10 @@ impl Color {
     }
 
     pub fn randomize(rng: &mut StdRng) -> Self {
-        let l = rng.gen_range(0.5..0.9);
-        let c = rng.gen_range(0.05..0.15);
-        let h = rng.gen_range(0.0..360.0);
-        let a = rng.gen_range(0.25..1.0);
+        let l = rng.gen_range(0.0..1.0);
+        let c = rng.gen_range(0.0..1.0);
+        let h = rng.gen_range(0.0..1.0);
+        let a = rng.gen_range(0.0..1.0);
         Color::new(l, c, h, a)
     }
 
@@ -31,8 +32,21 @@ impl Color {
     }
 }
 
+// Lcha expects a generic Wp (whitepoint).
+// D65 is a standard whitepoint.
+// we can use generics for Color class to specify whitepoint,
+// but it's not necessary for this example.
+// Primarily, its too early to use generics in our journey, IMO.
+impl Into<Lcha<D65, f32>> for Color {
+    fn into(self) -> Lcha<D65, f32> {
+        Lcha::new(self.l * 100.0, self.c * 128.0, self.h * 360.0, self.a)
+    }
+}
+
+// use the Color to lcha conversion to convert to rgba
 impl Into<Rgba> for Color {
     fn into(self) -> Rgba {
-        Lcha::new(self.l * 100.0, self.c * 128.0, self.h * 360.0, self.a).into()
+        let lcha: Lcha<D65, f32> = self.into();
+        lcha.into()
     }
 }

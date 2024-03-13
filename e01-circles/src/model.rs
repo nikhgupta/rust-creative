@@ -24,17 +24,16 @@ impl Model {
     }
 
     pub fn reset_num(&mut self, w: f32, h: f32) -> &mut Self {
-        self.num = (w * h / 10000.0).max(1.0) as u32;
-        self
-    }
-
-    pub fn reset_except_num(&mut self, w: f32, h: f32) -> &mut Self {
-        self.reset_seed().reset_hue().generate_particles(w, h);
+        let r = rng(self.seed).gen_range(1000.0..10000.0);
+        self.num = (w * h / r).max(1.0) as u32;
         self
     }
 
     pub fn reset(&mut self, w: f32, h: f32) -> &mut Self {
-        self.reset_num(w, h).reset_except_num(w, h);
+        self.reset_num(w, h)
+            .reset_seed()
+            .reset_hue()
+            .generate_particles(w, h);
         self
     }
 
@@ -55,7 +54,7 @@ impl Model {
     }
 
     fn reset_hue(&mut self) -> &mut Self {
-        self.hue = rng(self.seed).gen_range(0.0..360.0);
+        self.hue = rng(self.seed).gen_range(0.0..1.0);
         self
     }
 

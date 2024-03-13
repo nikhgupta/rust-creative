@@ -40,6 +40,11 @@ fn key_pressed(app: &App, model: &mut Model, key: Key) {
     let h = rect.h();
 
     match key {
+        Key::R => {
+            // save screenshot
+            let fname = format!("generated/{}-{}.png", app.exe_name().unwrap(), model.seed);
+            app.main_window().capture_frame(&fname);
+        }
         Key::Space => {
             model.reset(w, h);
         }
